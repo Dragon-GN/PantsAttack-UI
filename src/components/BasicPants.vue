@@ -1,5 +1,5 @@
 <template>
-  <div class="NinjaPants">
+  <div class="BasicPants">
     <canvas id="pants" height="320" width="320"></canvas>
   </div>
 </template>
@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export default {
-  name: "NinjaPants",
+  name: "BasicPants",
   mounted() {
     const clock = new THREE.Clock();
     const mixers = [];
@@ -40,7 +40,7 @@ export default {
     secondaryLight.position.set(-8, 5, 6);
     scene.add(ambientLight, mainLight, secondaryLight);
     const loader = new GLTFLoader();
-    loader.load("assets/Test-jorts.glb", function(gltf) {
+    loader.load("assets/pants/red.glb", function(gltf) {
       const model = gltf.scene.children[0];
       const mixer = new THREE.AnimationMixer(model);
       mixers.push(mixer);
@@ -62,10 +62,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.NinjaPants {
+.BasicPants {
   padding: 8px;
 
-  & > canvas {
+  canvas {
     background-color: whitesmoke;
   }
 }

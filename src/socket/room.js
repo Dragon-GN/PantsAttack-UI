@@ -1,26 +1,45 @@
 import store from "@/store";
+import { ROOM_SEND_EVENT, ROOM_RECEIVE_EVENT } from "@/models/room.js";
 
 const SOCKET_SERVER_ADDRESS = `ws://${window.location.host}/room`;
 let SOCKET;
 
-const ROOM_EVENT_TYPE = Object.freeze({
-  JOIN: "Join",
-  LEAVE: "Leave"
-});
+const handleReceiveEvent = message => {
+  console.log(message);
+  switch (message.type) {
+    case ROOM_RECEIVE_EVENT.ROOM: {
+      store.commit("setRoom", message.room);
+      break;
+    }
+    case ROOM_RECEIVE_EVENT.NAME: {
+      store.commit("setName", message.name);
+      break;
+    }
+    default: {
+      console.error(message.type);
+    }
+  }
+};
 
-export const joinRoom = name => {
+export const enterRoom = () => {
   SOCKET = new WebSocket(SOCKET_SERVER_ADDRESS);
-  SOCKET.addEventListener("open", () => {
-    SOCKET.send(JSON.stringify({ type: ROOM_EVENT_TYPE.JOIN, name }));
-  });
   SOCKET.addEventListener("message", event => {
     const message = JSON.parse(event.data);
-    store.commit("setRoom", message.room);
+    handleReceiveEvent(message);
   });
   SOCKET.addEventListener("close", () => {
     SOCKET = undefined;
-    store.commit("setRoom", {});
+    store.commit("reset");
   });
+};
+
+export const chooseUser = user => {
+  SOCKET.send(
+    JSON.stringify({
+      type: ROOM_SEND_EVENT.CHOOSE,
+      name: user
+    })
+  );
 };
 
 export const leaveRoom = () => {

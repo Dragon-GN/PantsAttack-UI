@@ -1,42 +1,59 @@
 <template>
   <div id="Room">
-    <h1>{{ room.name }}</h1>
-    <NinjaPants></NinjaPants>
-    <h2>Current Users:</h2>
-    <ul v-if="hasUsers">
-      <li v-for="user of room.users" :key="user">{{ user }}</li>
-    </ul>
-    <p v-else>None</p>
-    <v-btn class="primary" @click="leaveRoom">Leave</v-btn>
+    <template v-if="!name">
+      <h1>Choose Your Side</h1>
+      <section class="versus">
+        <button
+          class="primary"
+          :disabled="room.hasAtlas"
+          @click="choose('Atlas')"
+        >
+          Atlas
+        </button>
+        <span>VS</span>
+        <button
+          class="primary"
+          :disabled="room.hasDragon"
+          @click="choose('Dragon')"
+        >
+          Dragon
+        </button>
+      </section>
+      <button class="secondary" @click="choose('Observer')">Observer</button>
+    </template>
+    <template v-else>
+      <h1>Welcome, {{ name }}</h1>
+      <BasicPants></BasicPants>
+      <button class="primary" @click="leaveRoom">Leave</button>
+    </template>
   </div>
 </template>
 
 <script>
-import NinjaPants from "@/components/NinjaPants.vue";
+import BasicPants from "@/components/BasicPants.vue";
 
 export default {
   name: "Room",
-  components: { NinjaPants },
+  components: { BasicPants },
   computed: {
-    name: function() {
-      return this.$store.getters.name;
-    },
     room: function() {
       return this.$store.getters.room;
     },
-    hasUsers: function() {
-      return this.room.users ? this.room.users.length > 0 : false;
+    name: function() {
+      return this.$store.getters.name;
     }
   },
   methods: {
+    choose: function(user) {
+      this.$store.dispatch("chooseUser", user);
+    },
     leaveRoom: function() {
       this.$store.dispatch("leaveRoom");
-      this.$router.push("/");
     }
   },
   watch: {
     room: function(room) {
-      if (room.name === undefined) {
+      if (Object.keys(room).length === 0) {
         this.$router.push("/");
       }
     }
@@ -50,5 +67,16 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.versus {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    margin: 0 16px;
+    width: 92px;
+  }
 }
 </style>

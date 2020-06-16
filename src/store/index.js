@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
-import { joinRoom, leaveRoom } from "../socket/room";
+import { enterRoom, chooseUser, leaveRoom } from "@/socket/room.js";
 
 Vue.use(Vuex);
 
@@ -17,6 +17,10 @@ export default new Vuex.Store({
     room: state => state.room
   },
   mutations: {
+    reset(state) {
+      state.name = null;
+      state.room = {};
+    },
     setName(state, name) {
       state.name = name;
     },
@@ -25,14 +29,15 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    joinRoom({ commit, getters }) {
-      const name = getters.name;
-      const room = joinRoom(name);
-      commit("setRoom", room);
+    enterRoom() {
+      enterRoom();
+    },
+    chooseUser(_, user) {
+      chooseUser(user);
     },
     leaveRoom({ commit }) {
       leaveRoom();
-      commit("setRoom", {});
+      commit("reset");
     }
   },
   plugins: [persist.plugin]

@@ -1,7 +1,5 @@
 <template>
-  <v-app>
-    <router-view class="view" />
-  </v-app>
+  <router-view class="view" />
 </template>
 
 <script>
@@ -12,7 +10,7 @@ export default {
 
 <style lang="scss">
 .view {
-  min-height: inherit;
-  max-width: inherit;
+  min-height: 100vh;
+  max-width: 100%;
 }
 </style>
