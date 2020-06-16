@@ -1,6 +1,7 @@
 <template>
   <div id="Room">
     <h1>{{ room.name }}</h1>
+    <NinjaPants></NinjaPants>
     <h2>Current Users:</h2>
     <ul v-if="hasUsers">
       <li v-for="user of room.users" :key="user">{{ user }}</li>
@@ -11,8 +12,11 @@
 </template>
 
 <script>
+import NinjaPants from "@/components/NinjaPants.vue";
+
 export default {
   name: "Room",
+  components: { NinjaPants },
   computed: {
     name: function() {
       return this.$store.getters.name;
