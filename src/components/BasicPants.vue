@@ -10,6 +10,9 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export default {
   name: "BasicPants",
+  props: {
+    agent: String
+  },
   mounted() {
     const clock = new THREE.Clock();
     const mixers = [];
@@ -40,7 +43,9 @@ export default {
     secondaryLight.position.set(-8, 5, 6);
     scene.add(ambientLight, mainLight, secondaryLight);
     const loader = new GLTFLoader();
-    loader.load("assets/pants/red.glb", function(gltf) {
+    const pants =
+      this.agent === "Atlas" ? "assets/pants/blue.glb" : "assets/pants/red.glb";
+    loader.load(pants, function(gltf) {
       const model = gltf.scene.children[0];
       const mixer = new THREE.AnimationMixer(model);
       mixers.push(mixer);

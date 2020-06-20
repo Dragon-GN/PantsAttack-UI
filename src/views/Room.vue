@@ -23,8 +23,24 @@
     </template>
     <template v-else>
       <h1>Welcome, {{ name }}</h1>
-      <BasicPants></BasicPants>
-      <button class="primary" @click="leaveRoom">Leave</button>
+      <button class="secondary" @click="leaveRoom">Leave</button>
+      <BasicPants :agent="name"></BasicPants>
+      <h2>{{ room.narration }}</h2>
+      <section v-if="inPlay && isPlayer" class="round-action">
+        <button v-if="roundStart" class="primary" @click="takeInitiative">
+          Take Initiative
+        </button>
+        <div v-else-if="yourTurn" class="turn-action">
+          <div class="row">
+            <input type="text" v-model="insult" @keydown.enter="chide" />
+            <button class="primary" @click="chide">Chide</button>
+          </div>
+          <div class="row">
+            <button class="primary" @click="pass">Pass</button>
+            <button class="primary" @click="surrender">Surrender</button>
+          </div>
+        </div>
+      </section>
     </template>
   </div>
 </template>
@@ -35,12 +51,35 @@ import BasicPants from "@/components/BasicPants.vue";
 export default {
   name: "Room",
   components: { BasicPants },
+  data() {
+    return {
+      insult: ""
+    };
+  },
+  mounted() {
+    this.$store.dispatch("enterRoom");
+  },
   computed: {
+    name: function() {
+      return this.$store.getters.name;
+    },
     room: function() {
       return this.$store.getters.room;
     },
-    name: function() {
-      return this.$store.getters.name;
+    inPlay: function() {
+      return this.room.gameState === "Playing Game";
+    },
+    isPlayer: function() {
+      return this.name === "Atlas" || this.name === "Dragon";
+    },
+    roundStart: function() {
+      const round = this.room.currentRound;
+      return !!round && round.initiative === null;
+    },
+    yourTurn: function() {
+      const round = this.room.currentRound;
+      const turn = round.turns[round.turns.length - 1];
+      return !!turn && turn.agent === this.name;
     }
   },
   methods: {
@@ -49,12 +88,29 @@ export default {
     },
     leaveRoom: function() {
       this.$store.dispatch("leaveRoom");
+      this.$router.push("/");
+    },
+    takeInitiative: function() {
+      this.$store.dispatch("initiate");
+    },
+    chide: function() {
+      this.$store.dispatch("chide", this.insult);
+      this.insult = "";
+    },
+    pass: function() {
+      this.$store.dispatch("pass");
+    },
+    surrender: function() {
+      this.$store.dispatch("surrender");
     }
   },
   watch: {
     room: function(room) {
-      if (Object.keys(room).length === 0) {
-        this.$router.push("/");
+      if (
+        (this.name === "Atlas" && !room.hasAtlas) ||
+        (this.name === "Dragon" && !room.hasDragon)
+      ) {
+        this.$store.commit("setName", null);
       }
     }
   }
@@ -77,6 +133,12 @@ export default {
   button {
     margin: 0 16px;
     width: 92px;
+  }
+}
+.row {
+  text-align: center;
+  & > * {
+    margin: 4px;
   }
 }
 </style>

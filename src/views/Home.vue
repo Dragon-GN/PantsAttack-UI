@@ -10,7 +10,6 @@ export default {
   name: "Home",
   methods: {
     enterRoom: function() {
-      this.$store.dispatch("enterRoom");
       this.$router.push("/room");
     }
   }

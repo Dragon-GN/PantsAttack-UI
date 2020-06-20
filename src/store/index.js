@@ -1,7 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
-import { enterRoom, chooseUser, leaveRoom } from "@/socket/room.js";
+import { enterRoom, chooseUser, leaveRoom, act } from "@/socket/room.js";
+import { ROOM_SEND_EVENT } from "@/models/room";
 
 Vue.use(Vuex);
 
@@ -38,6 +39,18 @@ export default new Vuex.Store({
     leaveRoom({ commit }) {
       leaveRoom();
       commit("reset");
+    },
+    initiate() {
+      act(ROOM_SEND_EVENT.INITIATE);
+    },
+    surrender() {
+      act(ROOM_SEND_EVENT.SURRENDER);
+    },
+    pass() {
+      act(ROOM_SEND_EVENT.PASS);
+    },
+    chide(_, insult) {
+      act(ROOM_SEND_EVENT.CHIDE, insult);
     }
   },
   plugins: [persist.plugin]

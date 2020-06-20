@@ -5,7 +5,6 @@ const SOCKET_SERVER_ADDRESS = `ws://${window.location.host}/room`;
 let SOCKET;
 
 const handleReceiveEvent = message => {
-  console.log(message);
   switch (message.type) {
     case ROOM_RECEIVE_EVENT.ROOM: {
       store.commit("setRoom", message.room);
@@ -44,4 +43,10 @@ export const chooseUser = user => {
 
 export const leaveRoom = () => {
   SOCKET.close();
+};
+
+export const act = (type, data) => {
+  const event = { type };
+  if (data !== undefined) event.data = data;
+  SOCKET.send(JSON.stringify(event));
 };
