@@ -1,4 +1,5 @@
 import store from "@/store";
+import router from "@/router";
 import { ROOM_SEND_EVENT, ROOM_RECEIVE_EVENT } from "@/models/room.js";
 
 const SOCKET_SERVER_ADDRESS = `ws://${window.location.host}/room`;
@@ -29,6 +30,7 @@ export const enterRoom = () => {
   SOCKET.addEventListener("close", () => {
     SOCKET = undefined;
     store.commit("reset");
+    router.push("/");
   });
 };
 

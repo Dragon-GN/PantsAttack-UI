@@ -3,6 +3,7 @@ export const ROOM_SEND_EVENT = Object.freeze({
   INITIATE: "Initiate",
   SURRENDER: "Surrender",
   PASS: "Pass",
+  MOVE: "Move",
   CHIDE: "Chide"
 });
 
