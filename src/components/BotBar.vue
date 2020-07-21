@@ -7,7 +7,7 @@
       <template v-else-if="yourTurn" class="turn-action">
         <!-- <input class="duo" type="text" v-model="insult" @keydown.enter="chide"/>
         <button class="duo primary" @click="chide">Chide</button> -->
-        <button class="primary dark" @click="attack" :disabled="isEnemyClose">
+        <button class="primary dark" @click="attack" :disabled="!isEnemyClose">
           Attack
         </button>
         <button class="primary dark" @click="move" :disabled="isPathEmpty">
@@ -53,7 +53,7 @@ export default {
       const atlasPos = this.room.board["Atlas"];
       const dragonPos = this.room.board["Dragon"];
       const distance = Math.sqrt(
-        (atlasPos.x - dragonPos.x) ** 2 + (atlasPos.z - dragonPos.z)
+        (atlasPos.x - dragonPos.x) ** 2 + (atlasPos.z - dragonPos.z) ** 2
       );
       return distance > 0.5 && distance < 2;
     }
