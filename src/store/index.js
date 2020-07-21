@@ -65,6 +65,9 @@ export default new Vuex.Store({
     chide(_, insult) {
       act(ROOM_SEND_EVENT.CHIDE, insult);
     },
+    attack() {
+      act(ROOM_SEND_EVENT.ATTACK);
+    },
     move({ getters }) {
       const path = getters.path;
       const from = path[0];

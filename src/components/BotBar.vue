@@ -7,6 +7,9 @@
       <template v-else-if="yourTurn" class="turn-action">
         <!-- <input class="duo" type="text" v-model="insult" @keydown.enter="chide"/>
         <button class="duo primary" @click="chide">Chide</button> -->
+        <button class="primary dark" @click="attack" :disabled="isEnemyClose">
+          Attack
+        </button>
         <button class="primary dark" @click="move" :disabled="isPathEmpty">
           Move
         </button>
@@ -45,6 +48,14 @@ export default {
     isPathEmpty: function() {
       const path = this.$store.getters.path;
       return path.length === 0;
+    },
+    isEnemyClose: function() {
+      const atlasPos = this.room.board["Atlas"];
+      const dragonPos = this.room.board["Dragon"];
+      const distance = Math.sqrt(
+        (atlasPos.x - dragonPos.x) ** 2 + (atlasPos.z - dragonPos.z)
+      );
+      return distance > 0.5 && distance < 2;
     }
   },
   methods: {
@@ -54,6 +65,9 @@ export default {
     chide: function() {
       this.$store.dispatch("chide", this.insult);
       this.insult = "";
+    },
+    attack: function() {
+      this.$store.dispatch("attack");
     },
     move: function() {
       this.$store.dispatch("move");

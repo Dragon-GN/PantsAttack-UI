@@ -396,8 +396,12 @@ export default {
       // Initiative Turn
       if (oldTurn && newTurn.number === oldTurn.number) return;
       // MOVE Event
-      if (newTurn && newTurn.action === ROOM_SEND_EVENT.MOVE) {
-        this.moveJorts(newTurn.agent, newTurn.data.from, newTurn.data.to);
+      if (newTurn) {
+        if (newTurn.action === ROOM_SEND_EVENT.MOVE) {
+          this.moveJorts(newTurn.agent, newTurn.data.from, newTurn.data.to);
+        } else if (newTurn.action === ROOM_SEND_EVENT.ATTACK) {
+          console.log(newTurn);
+        }
       }
       // Your non-MOVE Event
       if (
