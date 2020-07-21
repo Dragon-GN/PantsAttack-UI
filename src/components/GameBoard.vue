@@ -245,6 +245,29 @@ export default {
       tween.start();
       action.play();
     },
+    attackJorts(agent, success) {
+      const scene = this.scene;
+      // agent animation
+      const gltf = this[agent];
+      const animation = gltf.animations[3];
+      const jorts = scene.getObjectByName(agent);
+      const mixer = new THREE.AnimationMixer(jorts);
+      const attackAction = mixer.clipAction(animation);
+      attackAction.repetitions = 1;
+      this.mixers.push(mixer);
+      // response animation
+      const other = agent === this.name ? this.enemy : this.name;
+      const otherGltf = this[other];
+      const otherAnimation = otherGltf.animations[success ? 1 : 0];
+      const otherJorts = scene.getObjectByName(other);
+      const otherMixer = new THREE.AnimationMixer(otherJorts);
+      const responseAction = otherMixer.clipAction(otherAnimation);
+      responseAction.repetitions = 1;
+      this.mixers.push(otherMixer);
+      // start both animations
+      attackAction.play();
+      responseAction.play();
+    },
     clearPathUI() {
       const scene = this.scene;
       const oldCircle = scene.getObjectByName("Player");
@@ -395,12 +418,11 @@ export default {
     lastTurn: function(newTurn, oldTurn) {
       // Initiative Turn
       if (oldTurn && newTurn.number === oldTurn.number) return;
-      // MOVE Event
       if (newTurn) {
         if (newTurn.action === ROOM_SEND_EVENT.MOVE) {
           this.moveJorts(newTurn.agent, newTurn.data.from, newTurn.data.to);
         } else if (newTurn.action === ROOM_SEND_EVENT.ATTACK) {
-          console.log(newTurn);
+          this.attackJorts(newTurn.agent, newTurn.data);
         }
       }
       // Your non-MOVE Event
