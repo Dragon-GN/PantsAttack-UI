@@ -250,7 +250,7 @@ export default {
       scene.remove(oldLine);
       this.$store.commit("setPath", []);
     },
-    drawPath(target) {
+    drawPathUI(target) {
       const camera = this.camera;
       const scene = this.scene;
       const raycaster = new THREE.Raycaster();
@@ -379,7 +379,7 @@ export default {
       }
     },
     mouseTarget: function(target) {
-      const points = this.drawPath(target);
+      const points = this.drawPathUI(target);
       if (points !== null) {
         this.$store.commit("setPath", points);
       }
