@@ -226,21 +226,26 @@ export default {
         jorts.position.z = origin.z;
         if (isPlayer) {
           self.drawPlayerCircle(origin);
-          self.drawTargetCircleOutline(target);
+          const config = {
+            name: "Target",
+            color: 0x2196f3,
+            radius: 0.5
+          };
+          self.drawCircleOutline(target, config);
           self.drawLine(origin, target);
         }
         self.rotateJorts(otherAgent, jorts.position);
       });
       tween.onComplete(() => {
         mixer.stopAllAction();
-        self.clearPath();
+        self.clearPathUI();
         self.rotateJorts(agent, otherJorts.position);
       });
       // kick it off
       tween.start();
       action.play();
     },
-    clearPath() {
+    clearPathUI() {
       const scene = this.scene;
       const oldCircle = scene.getObjectByName("Player");
       scene.remove(oldCircle);
@@ -274,7 +279,12 @@ export default {
         );
 
         this.drawPlayerCircle(origin);
-        this.drawTargetCircleOutline(target);
+        const config = {
+          name: "Target",
+          color: 0x2196f3,
+          radius: 0.5
+        };
+        this.drawCircleOutline(target, config);
         this.drawLine(origin, target);
         return [origin, target];
       } else return null;
@@ -294,13 +304,33 @@ export default {
       circle.rotation.x = -Math.PI / 2;
       scene.add(circle);
     },
-    drawTargetCircleOutline(target) {
+    drawEnemyUI(position) {
       const scene = this.scene;
-      const oldOutline = scene.getObjectByName("Target");
-      scene.remove(oldOutline);
       const radius = 0.5;
       const geometry = new THREE.CircleGeometry(radius, 32);
-      const material = new THREE.MeshBasicMaterial({ color: 0x2196f3 });
+      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const circle = new THREE.Mesh(geometry, material);
+      circle.name = "Enemy";
+      circle.position.x = position.x;
+      circle.position.y = 0.1;
+      circle.position.z = position.z;
+      circle.rotation.x = -Math.PI / 2;
+      scene.add(circle);
+      // Draw Attack Range
+      const config = {
+        name: "Range",
+        color: 0xff0000,
+        radius: 2
+      };
+      this.drawCircleOutline(circle.position, config);
+    },
+    drawCircleOutline(target, config) {
+      const scene = this.scene;
+      const oldOutline = scene.getObjectByName(config.name);
+      scene.remove(oldOutline);
+      const radius = config.radius;
+      const geometry = new THREE.CircleGeometry(radius, 32);
+      const material = new THREE.MeshBasicMaterial({ color: config.color });
       const circle = new THREE.Mesh(geometry, material);
       circle.position.x = target.x;
       circle.position.y = target.y;
@@ -322,9 +352,9 @@ export default {
       points.push(vector);
       // create outline
       const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-      const lineMaterial = new THREE.LineBasicMaterial({ color: 0x2196f3 });
+      const lineMaterial = new THREE.LineBasicMaterial({ color: config.color });
       const outline = new THREE.Line(lineGeometry, lineMaterial);
-      outline.name = "Target";
+      outline.name = config.name;
       scene.add(outline);
     },
     drawLine(origin, target) {
@@ -375,7 +405,18 @@ export default {
         newTurn.agent === this.name &&
         newTurn.action !== ROOM_SEND_EVENT.MOVE
       ) {
-        this.clearPath();
+        this.clearPathUI();
+      }
+    },
+    yourTurn: function(isYourTurn) {
+      if (isYourTurn) {
+        const enemyPosition = this.room.board[this.enemy];
+        this.drawEnemyUI(enemyPosition);
+      } else {
+        const enemy = this.scene.getObjectByName("Enemy");
+        const range = this.scene.getObjectByName("Range");
+        this.scene.remove(enemy);
+        this.scene.remove(range);
       }
     },
     mouseTarget: function(target) {
